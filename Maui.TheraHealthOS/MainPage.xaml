@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Maui.TheraHealthOS.MainPage"
+             NavigatedTo= "ContentPage_NavigatedTo"
+             > 
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <Label
+                Text="TheraHealth"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+        <!--Search Bar for Appointments-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Entry Grid.Column="0" Text="{Binding Query}"/>
+                <Button Grid.Column="1" Text="Search Appointments" Clicked="SearchAppointmentClicked"/>
+            </Grid>
+
+        <!--Appointment List-->
+          <ListView
+              ItemsSource="{Binding Appointments}"
+              SelectedItem="{Binding SelectedAppointment}"
+            >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width ="5*" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Label Text= "{Binding Model.Display}" Grid.Column ="0" />
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Text="Edit"  Grid.Column="0" Command="{Binding EditCommand}" CommandParameter="{Binding}"/>
+                                    <Button Text="Delete" Grid.Column="1" Clicked="InlineEditAppointmentClicked" Command="{Binding DeleteCommand}" CommandParameter="{Binding}"/>
+                                </Grid>
+        
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button Text="Schedule Appointment" Clicked ="AddAppointmentClicked" />
+            <Button Text="Edit Appointment" Clicked ="EditAppointmentClicked" />
+            <Button Text ="Delete Appointment" Clicked ="DeleteAppointmentClicked"/>
+
+        <!--Search Bar for Patients-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Entry Grid.Column="0" Text="{Binding Query}"/>
+                <Button Grid.Column="1" Text="Search Patients" Clicked="SearchPatientClicked"/>
+            </Grid>
+
+        <!--Patient List-->
+            <ListView
+              ItemsSource="{Binding Patients}"
+              SelectedItem="{Binding SelectedPatient}"
+            >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width ="5*" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Label Text= "{Binding Model.Display}" Grid.Column ="0" />
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Text="Edit"  Grid.Column="0" Command="{Binding EditCommand}" CommandParameter="{Binding}"/>
+                                    <Button Text="Delete" Grid.Column="1" Clicked="InlineEditPatientClicked" Command="{Binding DeleteCommand}" CommandParameter="{Binding}"/>
+                                </Grid>
+        
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button Text="Add Patient" Clicked ="AddPatientClicked" />
+            <Button Text="Edit Patient" Clicked ="EditPatientClicked" />
+            <Button Text ="Delete Patient" Clicked ="DeletePatientClicked" />
+
+        <!--Search Bar for Appointments-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Entry Grid.Column="0" Text="{Binding Query}"/>
+                <Button Grid.Column="1" Text="Search Physicians" Clicked="SearchPhysicianClicked"/>
+            </Grid>
+
+        <!--Physician List-->
+        <ListView
+              ItemsSource="{Binding Physicians}"
+              SelectedItem="{Binding SelectedPhysician}"
+            >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width ="5*" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Label Text= "{Binding Model.Display}" Grid.Column ="0" />
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Text="Edit"  Grid.Column="0" Command="{Binding EditCommand}" CommandParameter="{Binding}"/>
+                                    <Button Text="Delete" Grid.Column="1" Clicked="InlineEditPhysicianClicked" Command="{Binding DeleteCommand}" CommandParameter="{Binding}"/>
+                                </Grid>
+        
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button Text="Add Physician" Clicked ="AddPhysicianClicked" />
+            <Button Text="Edit Physician" Clicked ="EditPhysicianClicked" />
+            <Button Text ="Delete Physician" Clicked ="DeletePhysicianClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

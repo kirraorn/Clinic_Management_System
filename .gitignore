@@ -1,0 +1,30 @@
+## Visual Studio / .NET
+.vs/
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+
+## macOS
+.DS_Store
+
+## NuGet
+*.nupkg
+packages/
+
+## Logs
+*.log
+
+## Build results
+*.app
+*.exe
+
+## MAUI / Xamarin
+**/Resources/**/AboutAssets.txt

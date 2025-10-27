@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Maui.TheraHealthOS.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Maui.TheraHealthOS"
+    xmlns:view="clr-namespace:Maui.TheraHealthOS.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="Maui.TheraHealthOS">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
+    <ShellContent
+        Title="AppointmentDetail"
+        ContentTemplate="{DataTemplate view:AppointmentView}"
+        Route="Appointment" />
+    
+    <ShellContent
+        Title="PatientDetail"
+        ContentTemplate="{DataTemplate view:PatientView}"
+        Route="Patient" />
+   
+   <ShellContent
+        Title="PhysicianDetail"
+        ContentTemplate="{DataTemplate view:PhysicianView}"
+        Route="Physician" />
+</Shell>
