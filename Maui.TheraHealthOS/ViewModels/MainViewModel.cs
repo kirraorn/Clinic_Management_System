@@ -29,14 +29,13 @@ public class MainViewModel: INotifyPropertyChanged
 		{
 			get
 			{
+				var thing = AppointmentServiceProxy.Current.Appointments;
 				return new ObservableCollection<AppointmentViewModel?>
-				(AppointmentServiceProxy.
-				Current.
-				Appointments.
+				(AppointmentServiceProxy.Current.Appointments/*.
 				Where(
 					a => (a?.Patient?.Name?.ToUpper()?.Contains(Query?.ToUpper() ?? string.Empty) ?? false)
 					|| (a?.Physician?.Name?.ToUpper()?.Contains(Query?.ToUpper() ?? string.Empty) ?? false)
-				)
+				)*/
 				.Select(a => new AppointmentViewModel(a))
 				);
 			}

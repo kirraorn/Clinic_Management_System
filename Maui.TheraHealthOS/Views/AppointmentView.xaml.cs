@@ -1,6 +1,7 @@
 using Library.TheraHealth.Models;
 using Library.TheraHealth.Services;
 using Maui.TheraHealthOS.ViewModels;
+using System.Linq;
 
 namespace Maui.TheraHealthOS.Views;
 
@@ -11,48 +12,48 @@ public partial class AppointmentView : ContentPage
     public AppointmentView()
     {
         InitializeComponent();
-        BindingContext = new AppointmentViewModel(new Appointment());
+        BindingContext = new AppointmentViewModel();
     }
     private void CancelAppointmentClicked(object sender, EventArgs e)
     {
         Shell.Current.GoToAsync("//MainPage");
     }
     
-    private async void OkAppointmentClicked(object sender, EventArgs e)
+    private void OkAppointmentClicked(object sender, EventArgs e)
     {
-        if (BindingContext is AppointmentViewModel vm)
+        var vm = BindingContext as AppointmentViewModel;
+        if (vm != null)
         {
-            var appt = vm.Model;
-            if (appt != null)
-            {
-                if (appt.StartTime == null)
-                    appt.StartTime = DateTime.Now;
-
-                AppointmentServiceProxy.Current.AddOrUpdate(appt);
-            }
+            AppointmentServiceProxy.Current.AddOrUpdate(vm.Model);
         }
-        else
-        {
-            AppointmentServiceProxy.Current.AddOrUpdate(BindingContext as Appointment);
-        }
-
-        await Shell.Current.GoToAsync("//MainPage");
-        if (Shell.Current.CurrentPage is Maui.TheraHealthOS.MainPage mp)
-        {
-            (mp.BindingContext as Maui.TheraHealthOS.ViewModels.MainViewModel)?.Refresh();
-        }
+        Shell.Current.GoToAsync("//MainPage");
     }
     private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
     {
+        var vm = BindingContext as AppointmentViewModel;
+        if (vm == null)
+        {
+            vm = new AppointmentViewModel();
+            BindingContext = vm;
+        }
+
         if (AppointmentId == 0)
         {
-            BindingContext = new AppointmentViewModel(new Appointment());
+            vm.SetModel(new Appointment());
         }
         else
         {
-            BindingContext = new AppointmentViewModel(new Appointment(AppointmentId));
+            vm.SetModel(new Appointment(AppointmentId));
         }
 
+        vm.Refresh();
+        
+        // Update Picker controls
+        patientPicker.ItemsSource = vm.Patients?.ToList();
+        physicianPicker.ItemsSource = vm.Physicians?.ToList();
+        patientPicker.SelectedItem = vm.SelectedPatient;
+        physicianPicker.SelectedItem = vm.SelectedPhysician;
     }
-}
+       
 
+}

@@ -76,6 +76,6 @@ public class PatientServiceProxy
 
     public Patient? GetPatientById(int id)
     {
-        return Patients.FirstOrDefault(p => p.Id == id);
+        return Patients.FirstOrDefault(p => p?.Id == id);
     }
 }

@@ -8,7 +8,7 @@ namespace Library.TheraHealth.Services;
 
 public class AppointmentServiceProxy
 {
-    private List<Appointment?> appointments;
+    public List<Appointment?> appointments;
     private AppointmentServiceProxy()
     {
          appointments = new List<Appointment?>();
@@ -37,7 +37,7 @@ public class AppointmentServiceProxy
 
     public Appointment? AddOrUpdate(Appointment? appointment)
     {
-        if (appointment == null) return null;
+        if (appointment == null) return null; 
 
         if (appointment.Id <= 0)
         {

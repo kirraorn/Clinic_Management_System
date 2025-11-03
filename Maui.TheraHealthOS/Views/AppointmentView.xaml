@@ -5,19 +5,29 @@
              NavigatedTo= "ContentPage_NavigatedTo">
 <VerticalStackLayout>
     <Label Text="Patient" />
-    <Picker ItemsSource="{Binding Patient}"
-            SelectedItem="{Binding SelectedPatient}" />
+    <Picker x:Name="patientPicker" ItemsSource="{Binding Patients}"
+        SelectedItem="{Binding SelectedPatient}" />
 
     <Label Text="Physician" />
-    <Picker ItemsSource="{Binding Physician}"
-            SelectedItem="{Binding SelectedPhysician}" />
+    <Picker x:Name="physicianPicker" ItemsSource="{Binding Physicians}"
+        SelectedItem="{Binding SelectedPhysician}" />
 
     <Label Text="Appointment Start"/>
         <DatePicker Date="{Binding StartDate}" MinimumDate="{Binding MinStartDate}"/>
+        <TimePicker Time="{Binding StartTime}"/>
+
+    <Label Text="Appointment End"/>
+        <TimePicker Time="{Binding EndTime}"/>
+
+    <Label Text="{Binding ErrorMessage}" 
+               TextColor="Red" 
+               IsVisible="{Binding IsErrorMessageVisible}"
+               FontAttributes="Bold"/>
+        
     <Label Text="Notes"/>
     <Entry Text="{Binding Notes}"/>
 
     <Button Text="Cancel" Clicked="CancelAppointmentClicked"/>
-    <Button Text="Ok" Clicked="OkAppointmentClicked"/>
+    <Button Text="Ok" Clicked="OkAppointmentClicked" IsEnabled="{Binding CanSave}"/>
 </VerticalStackLayout>
 </ContentPage>

@@ -27,7 +27,7 @@ public class Appointment
             EndTime = appointmentCopy.EndTime;
             Notes = appointmentCopy.Notes;
 
-            Patient = PatientServiceProxy.Current.GetPatientById(PatientId); // added these two lines
+            Patient = PatientServiceProxy.Current.GetPatientById(PatientId);
             Physician = PhysicianServiceProxy.Current.GetPhysicianId(PhysicianId);
         }
     }
