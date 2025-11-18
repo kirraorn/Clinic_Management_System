@@ -8,9 +8,11 @@
     <Picker x:Name="patientPicker" ItemsSource="{Binding Patients}"
         SelectedItem="{Binding SelectedPatient}" />
 
+
     <Label Text="Physician" />
     <Picker x:Name="physicianPicker" ItemsSource="{Binding Physicians}"
         SelectedItem="{Binding SelectedPhysician}" />
+
 
     <Label Text="Appointment Start"/>
         <DatePicker Date="{Binding StartDate}" MinimumDate="{Binding MinStartDate}"/>

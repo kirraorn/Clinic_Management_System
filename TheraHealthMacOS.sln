@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.TheraHealth", "Libr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maui.TheraHealthOS", "Maui.TheraHealthOS\Maui.TheraHealthOS.csproj", "{6F9CCE35-4C2C-4B34-9B99-5617F05C37BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.TheraHealthOS", "Api.TheraHealthOS\Api.TheraHealthOS.csproj", "{8FB1FCED-1E99-4804-B099-83D3C0E5EEAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{6F9CCE35-4C2C-4B34-9B99-5617F05C37BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F9CCE35-4C2C-4B34-9B99-5617F05C37BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F9CCE35-4C2C-4B34-9B99-5617F05C37BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FB1FCED-1E99-4804-B099-83D3C0E5EEAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FB1FCED-1E99-4804-B099-83D3C0E5EEAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FB1FCED-1E99-4804-B099-83D3C0E5EEAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FB1FCED-1E99-4804-B099-83D3C0E5EEAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

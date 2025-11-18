@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Library.TheraHealth.DTO;
 
 namespace Maui.TheraHealthOS.ViewModels
 {
@@ -19,7 +20,7 @@ namespace Maui.TheraHealthOS.ViewModels
         private AppointmentServiceProxy _appointmentSvc;
 
         public List<Patient?> Patients => _patientSvc.Patients;
-        public List<Physician?> Physicians => _physicianSvc.Physicians;
+        public List<PhysicianDTO> Physicians => _physicianSvc.Physicians;
 
         private List<Appointment?> appointments;
         public List<Appointment?> Appointments
@@ -30,6 +31,7 @@ namespace Maui.TheraHealthOS.ViewModels
             }
         }
 
+// CONSTRUCTORS ---------------------------------------------------
         public AppointmentViewModel()
         {
             _patientSvc = PatientServiceProxy.Current;
@@ -46,6 +48,7 @@ namespace Maui.TheraHealthOS.ViewModels
 
             Model = new Appointment();
             SetUpCommands();
+            ValidateAppointment();
         }
 
         public AppointmentViewModel(Appointment? model)
@@ -63,7 +66,9 @@ namespace Maui.TheraHealthOS.ViewModels
             }
             Model = model;
             SetUpCommands();
+            ValidateAppointment();
         }
+// COMMANDS ---------------------------------------------------
         private void SetUpCommands()
         {
             DeleteCommand = new Command(DoDelete);
@@ -93,6 +98,7 @@ namespace Maui.TheraHealthOS.ViewModels
         public ICommand? DeleteCommand { get; set; }
         public ICommand? EditCommand { get; set; }
 
+// SETTERS/GETTERS ---------------------------------------------------
         public Patient? SelectedPatient
         {
             get => Model?.Patient;
@@ -105,14 +111,15 @@ namespace Maui.TheraHealthOS.ViewModels
             }
         }
 
-        public Physician? SelectedPhysician
+        public PhysicianDTO? SelectedPhysician
         {
             get => Model?.Physician;
             set
             {
                 if (Model == null) Model = new Appointment();
-                Model.Physician = value;
                 Model.PhysicianId = value?.Id ?? 0;
+                Model.Physician = value;
+            
                 NotifyPropertyChanged();
             }
         }
@@ -164,6 +171,36 @@ namespace Maui.TheraHealthOS.ViewModels
             }
         }
 
+// UPDATING MODEL ---------------------------------------------------
+    private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public void Refresh()
+		{
+			NotifyPropertyChanged(nameof(Patients));
+			NotifyPropertyChanged(nameof(Physicians));
+		}
+
+        // check to see if better way 
+        public void SetModel(Appointment? model)
+        {
+            Model = model ?? new Appointment();
+            NotifyPropertyChanged(nameof(Model));
+            NotifyPropertyChanged(nameof(SelectedPatient));
+            NotifyPropertyChanged(nameof(SelectedPhysician));
+            NotifyPropertyChanged(nameof(StartDate));
+            NotifyPropertyChanged(nameof(StartTime));
+            NotifyPropertyChanged(nameof(EndTime));
+            NotifyPropertyChanged(nameof(Notes));
+            NotifyPropertyChanged(nameof(CanSave));
+            NotifyPropertyChanged(nameof(IsErrorMessageVisible));
+            NotifyPropertyChanged(nameof(ErrorMessage));
+        }
+
+// VALIDATION ---------------------------------------------------
         public DateTime MinStartDate
         {
             get
@@ -199,77 +236,104 @@ namespace Maui.TheraHealthOS.ViewModels
             }
         }
 
-        private bool IsAppointmentTimeValid(DateTime date, TimeSpan time)
-        {
-
-            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return false;
-            }
-
-            var startHour = new TimeSpan(8, 0, 0);  
-            var endHour = new TimeSpan(17, 0, 0);   
-
-            if (time < startHour || time >= endHour)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private void ValidateAppointment()
         {
             var date = StartDate.Date;
             var startTime = StartTime;
             var endTime = EndTime;
 
-            if (endTime <= startTime)
-            {
-                ErrorMessage = "The appointment end time must be after the start time.";
-            }       
+      
+            var startHour = new TimeSpan(8, 0, 0);  
+            var endHour = new TimeSpan(17, 0, 0);  
 
-            if (IsAppointmentTimeValid(date, startTime))
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
             {
-                ErrorMessage = string.Empty;
-                IsErrorMessageVisible = false; 
+                ErrorMessage = "Appointments are only available Monday through Friday";
+                IsErrorMessageVisible = true;
 
+            }
+            else if (startTime < startHour || startTime > endHour)
+            {
+                ErrorMessage = "The start time must be between 8:00 AM and 5:00 PM.";
+                IsErrorMessageVisible = true;
+            }
+            else if (endTime < startHour || endTime > endHour)
+            {
+                ErrorMessage = "The end time must be between 8:00 AM and 5:00 PM.";
+                IsErrorMessageVisible = true;
+            }
+            else if (startTime > endTime || startTime == endTime)
+            {
+                ErrorMessage = "The start time must be before the end time.";
+                IsErrorMessageVisible = true;
+            }
+            else if (SelectedPhysician == null)
+            {
+                ErrorMessage = "Please select a physician.";
+                IsErrorMessageVisible = true;
+            }
+            else if (SelectedPatient == null)
+            {
+                ErrorMessage = "Please select a patient.";
+                IsErrorMessageVisible = true;
+            } 
+            else if (StartDate == null)
+            {
+                ErrorMessage = "Please select a start date.";
+                IsErrorMessageVisible = true;
+            }
+            if (StartDate < DateTime.Today || (StartDate == DateTime.Today && StartTime < DateTime.Now.TimeOfDay))
+            {
+                ErrorMessage = "Start date/time cannot be in the past.";
+                IsErrorMessageVisible = true;
             }
             else
             {
-                ErrorMessage = "Appointments are only available Monday through Friday, from 8:00 AM to 5:00 PM local time.";
-                IsErrorMessageVisible = true;
+               ErrorMessage = string.Empty;
+               IsErrorMessageVisible = false;
             }
+           
+            // If no other validation error, check physician double-booking 
+            {
+                try
+                {
+                    if (Model != null && Model.PhysicianId > 0 && (Model.StartDate.HasValue || true) && (Model.StartTime.HasValue || true) && (Model.EndTime.HasValue || true))
+                    {
+                        var newStart = StartDate.Date + StartTime;
+                        var newEnd = StartDate.Date + EndTime;
+
+                        if (newEnd > newStart)
+                        {
+                            var conflict = AppointmentServiceProxy
+                                .Current
+                                .Appointments
+                                .Where(a => a != null)
+                                .Where(a => (a?.PhysicianId ?? -1) == Model.PhysicianId)
+                                .Where(a => (a?.Id ?? 0) != (Model.Id)) // exclude self when editing
+                                .Where(a => a?.StartDate.HasValue == true && a?.StartTime.HasValue == true && a?.EndTime.HasValue == true)
+                                .Any(a =>
+                                {
+                                    var existingStart = a!.StartDate!.Value.Date + a.StartTime!.Value;
+                                    var existingEnd = a.StartDate!.Value.Date + a.EndTime!.Value;
+                                    if (existingStart.Date != newStart.Date) return false; // only same date
+                                    return (newStart < existingEnd) && (existingStart < newEnd);
+                                });
+
+                            if (conflict)
+                            {
+                                ErrorMessage = "This physician already has an overlapping appointment. Pick a different time.";
+                                IsErrorMessageVisible = true;
+                            }
+                        }
+                    }
+                }
+                catch
+                {}
+            }
+
             NotifyPropertyChanged(nameof(CanSave));
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-		public event PropertyChangedEventHandler? PropertyChanged;
-
-		public void Refresh()
-		{
-			NotifyPropertyChanged(nameof(Patients));
-			NotifyPropertyChanged(nameof(Physicians));
-		}
-
-        // check to see if better way 
-        public void SetModel(Appointment? model)
-        {
-            Model = model ?? new Appointment();
-            NotifyPropertyChanged(nameof(Model));
-            NotifyPropertyChanged(nameof(SelectedPatient));
-            NotifyPropertyChanged(nameof(SelectedPhysician));
-            NotifyPropertyChanged(nameof(StartDate));
-            NotifyPropertyChanged(nameof(StartTime));
-            NotifyPropertyChanged(nameof(EndTime));
-            NotifyPropertyChanged(nameof(Notes));
-            NotifyPropertyChanged(nameof(CanSave));
-            NotifyPropertyChanged(nameof(IsErrorMessageVisible));
-            NotifyPropertyChanged(nameof(ErrorMessage));
-        }
 
     }
 }

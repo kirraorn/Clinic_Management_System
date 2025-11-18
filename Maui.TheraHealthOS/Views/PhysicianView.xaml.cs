@@ -1,5 +1,6 @@
 using Library.TheraHealth.Models;
 using Library.TheraHealth.Services;
+using Library.TheraHealth.DTO;
 
 namespace Maui.TheraHealthOS.Views;
 
@@ -20,7 +21,7 @@ public partial class PhysicianView : ContentPage
 
     private void OkPhysicianClicked(object sender, EventArgs e)
     {
-        PhysicianServiceProxy.Current.AddOrUpdate(BindingContext as Physician);
+        PhysicianServiceProxy.Current.AddOrUpdate(BindingContext as PhysicianDTO);
         Shell.Current.GoToAsync("//MainPage");
     }
 
@@ -28,11 +29,11 @@ public partial class PhysicianView : ContentPage
     {
         if (PhysicianId == 0)
         {
-            BindingContext = new Physician();
+            BindingContext = new PhysicianDTO();
         }
         else
         {
-            BindingContext = new Physician(PhysicianId);
+            BindingContext = new PhysicianDTO(PhysicianId);
         }
     }
 }

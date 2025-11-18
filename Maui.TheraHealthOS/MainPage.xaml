@@ -14,7 +14,7 @@
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
-        <!--Search Bar for Appointments-->
+        <!--Search Bar for Appointments
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10*" />
@@ -23,7 +23,7 @@
                 
                 <Entry Grid.Column="0" Text="{Binding Query}"/>
                 <Button Grid.Column="1" Text="Search Appointments" Clicked="SearchAppointmentClicked"/>
-            </Grid>
+            </Grid>-->
 
         <!--Appointment List-->
           <ListView
@@ -58,7 +58,7 @@
             <Button Text="Edit Appointment" Clicked ="EditAppointmentClicked" />
             <Button Text ="Delete Appointment" Clicked ="DeleteAppointmentClicked"/>
 
-        <!--Search Bar for Patients-->
+        <!--Search Bar for Patients
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10*" />
@@ -67,7 +67,7 @@
                 
                 <Entry Grid.Column="0" Text="{Binding Query}"/>
                 <Button Grid.Column="1" Text="Search Patients" Clicked="SearchPatientClicked"/>
-            </Grid>
+            </Grid>-->
 
         <!--Patient List-->
             <ListView
@@ -102,7 +102,7 @@
             <Button Text="Edit Patient" Clicked ="EditPatientClicked" />
             <Button Text ="Delete Patient" Clicked ="DeletePatientClicked" />
 
-        <!--Search Bar for Appointments-->
+        <!--Search Bar for Physicians
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10*" />
@@ -111,7 +111,7 @@
                 
                 <Entry Grid.Column="0" Text="{Binding Query}"/>
                 <Button Grid.Column="1" Text="Search Physicians" Clicked="SearchPhysicianClicked"/>
-            </Grid>
+            </Grid> -->
 
         <!--Physician List-->
         <ListView

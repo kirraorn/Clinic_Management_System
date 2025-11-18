@@ -47,13 +47,6 @@ public partial class AppointmentView : ContentPage
         }
 
         vm.Refresh();
-        
-        // Update Picker controls
-        patientPicker.ItemsSource = vm.Patients?.ToList();
-        physicianPicker.ItemsSource = vm.Physicians?.ToList();
-        patientPicker.SelectedItem = vm.SelectedPatient;
-        physicianPicker.SelectedItem = vm.SelectedPhysician;
-    }
-       
+    }     
 
 }

@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Library.TheraHealth.Models;
 using Library.TheraHealth.Services;
+using Library.TheraHealth.DTO;
 
 namespace Maui.TheraHealthOS.ViewModels
 {
@@ -8,11 +9,11 @@ namespace Maui.TheraHealthOS.ViewModels
     {
         public PhysicianViewModel()
         {
-            Model = new Physician();
+            Model = new PhysicianDTO();
             SetUpCommands();
         }
 
-        public PhysicianViewModel(Physician? model)
+        public PhysicianViewModel(PhysicianDTO? model)
         {
             Model = model;
             SetUpCommands();
@@ -42,7 +43,7 @@ namespace Maui.TheraHealthOS.ViewModels
             Shell.Current.GoToAsync($"//Physician?physicianId={selectedPhysicianId}");
         }
 
-        public Physician? Model { get; set; }
+        public PhysicianDTO? Model { get; set; }
         public ICommand? DeleteCommand { get; set; }
         public ICommand? EditCommand { get; set; }
     }

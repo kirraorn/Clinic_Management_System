@@ -1,15 +1,16 @@
 
 using Library.TheraHealth.Services;
+using Library.TheraHealth.DTO;
 namespace Library.TheraHealth.Models;
 
 public class Appointment
 {
     public int Id { get; set; }
     public Appointment() { }
-    public int PatientId { get; set; }
     public int PhysicianId { get; set; }
+    public int PatientId { get; set; }
     public Patient? Patient { get; set; }
-    public Physician? Physician { get; set; }
+    public PhysicianDTO? Physician { get; set; }
     public DateTime? StartDate { get; set; }
     public TimeSpan? StartTime { get; set; }
     public TimeSpan? EndTime { get; set; }
@@ -28,7 +29,10 @@ public class Appointment
             Notes = appointmentCopy.Notes;
 
             Patient = PatientServiceProxy.Current.GetPatientById(PatientId);
+            if (PhysicianId != 0)
             Physician = PhysicianServiceProxy.Current.GetPhysicianId(PhysicianId);
+            
+           
         }
     }
     public string Display

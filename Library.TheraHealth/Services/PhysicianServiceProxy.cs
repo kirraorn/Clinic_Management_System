@@ -1,15 +1,21 @@
 using System;
 using System.ComponentModel;
+using Library.TheraHealth.DTO;
 using Library.TheraHealth.Models;
+using Library.TheraHealth.Utilities;
+using Newtonsoft.Json;
 
 namespace Library.TheraHealth.Services;
 
 public class PhysicianServiceProxy
 {
-    private List<Physician?> physicians;
+    private List<PhysicianDTO?> physicians;
+    public event Action? PhysiciansChanged;
     private PhysicianServiceProxy()
     {
-        physicians = new List<Physician?>();
+        physicians = new List<PhysicianDTO?>();
+        // Initial load
+        Refresh();
     }
     private static PhysicianServiceProxy? instance;
     private static object instanceLock = new object();
@@ -27,57 +33,76 @@ public class PhysicianServiceProxy
             return instance;
         }
     }
-    public List<Physician?> Physicians
+    public List<PhysicianDTO?> Physicians
     {
         get { return physicians; }
     }
 
-    public Physician? AddOrUpdate(Physician? physician)
+    public async Task<PhysicianDTO?> AddOrUpdate(PhysicianDTO? physician)
     {
         if (physician == null) return null;
 
-        if (physician.Id <= 0)
+        var physicianPayload = await new WebRequestHandler().Post("/Physician", physician);
+        var physicianFromServer = JsonConvert.DeserializeObject<PhysicianDTO?>(physicianPayload);
+
+        // Update local cache from server response
+        if (physicianFromServer != null)
         {
-            var maxId = -1;
-            if (physicians.Any())
+            var existing = physicians.FirstOrDefault(p => (p?.Id ?? 0) == (physicianFromServer?.Id ?? 0));
+            if (existing == null)
             {
-                maxId = physicians.Select(p => p?.Id ?? 0).Max();
+                physicians.Add(physicianFromServer);
             }
             else
             {
-                maxId = 0;
+                var index = physicians.IndexOf(existing);
+                physicians[index] = physicianFromServer;
             }
-            physician.Id = ++maxId;
-            physicians.Add(physician);
+            PhysiciansChanged?.Invoke();
         }
-        else
-        {
-            var physicianToEdit = physicians.FirstOrDefault(p => (p?.Id ?? 0) == physician.Id);
-            if (physicianToEdit != null)
-            {
-                var index = physicians.IndexOf(physicianToEdit);
-                physicians.RemoveAt(index);
-                physicians.Insert(index, physician);
-            }
 
-        }
-        return physician;
+        return physicianFromServer;
     }
 
-    public Physician? DeletePhysician(int id)
+    public PhysicianDTO? DeletePhysician(int id)
     {
+        var response = new WebRequestHandler().Delete($"/Physician/{id}").Result;
+
         var physicianToDelete = physicians
             .Where(p => p != null)
             .FirstOrDefault(p => (p?.Id ?? -1) == id);
 
         physicians.Remove(physicianToDelete);
 
+        PhysiciansChanged?.Invoke();
+
         return physicianToDelete;
     }
 
-    public Physician? GetPhysicianId(int id)
+    public void Refresh()
     {
-        return Physicians.FirstOrDefault(p => p.Id == id);
+        try
+        {
+            var physiciansResponse = new WebRequestHandler().Get("/Physician").Result;
+            if (physiciansResponse != null)
+            {
+                physicians = JsonConvert.DeserializeObject<List<PhysicianDTO?>>(physiciansResponse) ?? new List<PhysicianDTO?>();
+            }
+            else
+            {
+                physicians = new List<PhysicianDTO?>();
+            }
+            PhysiciansChanged?.Invoke();
+        }
+        catch
+        {
+            // ignore for now; keep existing list
+        }
+    }
+
+    public PhysicianDTO? GetPhysicianId(int id)
+    {
+        return Physicians.FirstOrDefault(p => (p?.Id ?? -1) == id);
     }
 
 }

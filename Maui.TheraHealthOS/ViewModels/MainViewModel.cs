@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Library.TheraHealth.Models;
 using Library.TheraHealth.Services;
+using Library.TheraHealth.DTO;
 
 namespace Maui.TheraHealthOS.ViewModels
 {
@@ -18,6 +19,7 @@ public class MainViewModel: INotifyPropertyChanged
 
 		public void Refresh()
 		{
+			
 			NotifyPropertyChanged(nameof(Patients));
 			NotifyPropertyChanged(nameof(Physicians));
 			NotifyPropertyChanged(nameof(Appointments));

@@ -1,4 +1,7 @@
-﻿using Maui.TheraHealthOS.ViewModels;
+﻿// BUGS:
+// 2: when editing appointments, the physician dropdown needs to be reclicked or else it will be deleted
+
+using Maui.TheraHealthOS.ViewModels;
 
 namespace Maui.TheraHealthOS;
 
@@ -12,12 +15,12 @@ public partial class MainPage : ContentPage
 
 	}
 
-// Refresh on navigation
+// Refresh on navigation ---------------
 	private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
 	{
 		(BindingContext as MainViewModel)?.Refresh();
 	}
-// Add buttons
+// Add buttons ----------------
 	private void AddAppointmentClicked(object sender, EventArgs e)
 	{
 		Shell.Current.GoToAsync("//Appointment?appointmentId=0");
@@ -33,7 +36,7 @@ public partial class MainPage : ContentPage
 		Shell.Current.GoToAsync("//Physician?physicianId=0");
 	}
 
-	// Delete buttons
+	// Delete buttons -----------------
 
 	private void DeleteAppointmentClicked(object sender, EventArgs e)
 	{
@@ -48,7 +51,7 @@ public partial class MainPage : ContentPage
 		(BindingContext as MainViewModel)?.DeletePhysician();
 	}
 
-	// Edit buttons
+	// Edit buttons -----------------
 
 	private void EditAppointmentClicked(object sender, EventArgs e)
 	{
@@ -82,7 +85,7 @@ public partial class MainPage : ContentPage
 		(BindingContext as MainViewModel)?.Refresh();
 	}
 
-	//search buttons
+	/*search buttons -----------------
 	private void SearchAppointmentClicked(object sender, EventArgs e)
 	{
 		(BindingContext as MainViewModel)?.Refresh();
@@ -94,6 +97,6 @@ public partial class MainPage : ContentPage
 		private void SearchPhysicianClicked(object sender, EventArgs e)
 	{
 		(BindingContext as MainViewModel)?.Refresh();
-	}
+	}*/
 }
 

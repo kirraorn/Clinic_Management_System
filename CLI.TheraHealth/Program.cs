@@ -8,6 +8,7 @@ namespace MyApp
     {
         static void Main(string[] args)
         {
+            /*
             Console.WriteLine("Welcome to TheraHealth!");
             List<Patient?> patients = PatientServiceProxy.Current.Patients;
             List<Physician?> physicians = PhysicianServiceProxy.Current.Physicians;
@@ -120,7 +121,7 @@ namespace MyApp
                         Console.WriteLine("Invalid choice. Please try again.");
                         break;
                 }
-            } while (cont);
+            } while (cont);*/
         }
     }
 }
