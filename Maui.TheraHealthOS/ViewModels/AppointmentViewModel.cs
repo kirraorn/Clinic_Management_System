@@ -107,6 +107,7 @@ namespace Maui.TheraHealthOS.ViewModels
                 if (Model == null) Model = new Appointment();
                 Model.Patient = value;
                 Model.PatientId = value?.Id ?? 0;
+                ValidateAppointment();
                 NotifyPropertyChanged();
             }
         }
@@ -119,7 +120,7 @@ namespace Maui.TheraHealthOS.ViewModels
                 if (Model == null) Model = new Appointment();
                 Model.PhysicianId = value?.Id ?? 0;
                 Model.Physician = value;
-            
+                ValidateAppointment();
                 NotifyPropertyChanged();
             }
         }
@@ -238,97 +239,127 @@ namespace Maui.TheraHealthOS.ViewModels
 
         private void ValidateAppointment()
         {
+            string? error = null;
+
             var date = StartDate.Date;
             var startTime = StartTime;
             var endTime = EndTime;
 
-      
-            var startHour = new TimeSpan(8, 0, 0);  
-            var endHour = new TimeSpan(17, 0, 0);  
+            var startHour = new TimeSpan(8, 0, 0);
+            var endHour = new TimeSpan(17, 0, 0);
 
-            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            if (StartDate < DateTime.Today || (StartDate == DateTime.Today && StartTime < DateTime.Now.TimeOfDay))
             {
-                ErrorMessage = "Appointments are only available Monday through Friday";
-                IsErrorMessageVisible = true;
-
+                error = "Start date/time cannot be in the past.";
+            }
+            else if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                error = "Appointments are only available Monday through Friday";
             }
             else if (startTime < startHour || startTime > endHour)
             {
-                ErrorMessage = "The start time must be between 8:00 AM and 5:00 PM.";
-                IsErrorMessageVisible = true;
+                error = "The start time must be between 8:00 AM and 5:00 PM.";
             }
             else if (endTime < startHour || endTime > endHour)
             {
-                ErrorMessage = "The end time must be between 8:00 AM and 5:00 PM.";
-                IsErrorMessageVisible = true;
+                error = "The end time must be between 8:00 AM and 5:00 PM.";
             }
-            else if (startTime > endTime || startTime == endTime)
+            else if (startTime >= endTime)
             {
-                ErrorMessage = "The start time must be before the end time.";
-                IsErrorMessageVisible = true;
+                error = "The start time must be before the end time.";
             }
             else if (SelectedPhysician == null)
             {
-                ErrorMessage = "Please select a physician.";
-                IsErrorMessageVisible = true;
+                error = "Please select a physician.";
             }
             else if (SelectedPatient == null)
             {
-                ErrorMessage = "Please select a patient.";
-                IsErrorMessageVisible = true;
-            } 
-            else if (StartDate == null)
-            {
-                ErrorMessage = "Please select a start date.";
-                IsErrorMessageVisible = true;
+                error = "Please select a patient.";
             }
-            if (StartDate < DateTime.Today || (StartDate == DateTime.Today && StartTime < DateTime.Now.TimeOfDay))
+
+            
+            if (string.IsNullOrEmpty(error) && Model != null && Model.PhysicianId > 0)
             {
-                ErrorMessage = "Start date/time cannot be in the past.";
+                try
+                {
+                    var newStart = StartDate.Date + StartTime;
+                    var newEnd = StartDate.Date + EndTime;
+
+                    if (newEnd > newStart)
+                    {
+                        
+                        var physicianConflict = AppointmentServiceProxy
+                            .Current
+                            .Appointments
+                            .Where(a => a != null)
+                            .Where(a => (a?.PhysicianId ?? -1) == Model.PhysicianId)
+                            .Where(a => (a?.Id ?? 0) != (Model.Id))
+                            .Where(a => a?.StartDate.HasValue == true && a?.StartTime.HasValue == true && a?.EndTime.HasValue == true)
+                            .Any(a =>
+                            {
+                                var existingStart = a!.StartDate!.Value.Date + a.StartTime!.Value;
+                                var existingEnd = a.StartDate!.Value.Date + a.EndTime!.Value;
+                                if (existingStart.Date != newStart.Date) return false;
+                                return (newStart < existingEnd) && (existingStart < newEnd);
+                            });
+
+                        if (physicianConflict)
+                        {
+                            error = "This physician already has an overlapping appointment. Pick a different time.";
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                   
+                }
+            }
+
+            
+            if (string.IsNullOrEmpty(error) && Model != null && Model.PatientId > 0)
+            {
+                try
+                {
+                    var newStart = StartDate.Date + StartTime;
+                    var newEnd = StartDate.Date + EndTime;
+
+                    if (newEnd > newStart)
+                    {
+                        var patientConflict = AppointmentServiceProxy
+                            .Current
+                            .Appointments
+                            .Where(a => a != null)
+                            .Where(a => (a?.PatientId ?? -1) == Model.PatientId)
+                            .Where(a => (a?.Id ?? 0) != (Model.Id))
+                            .Where(a => a?.StartDate.HasValue == true && a?.StartTime.HasValue == true && a?.EndTime.HasValue == true)
+                            .Any(a =>
+                            {
+                                var existingStart = a!.StartDate!.Value.Date + a.StartTime!.Value;
+                                var existingEnd = a.StartDate!.Value.Date + a.EndTime!.Value;
+                                if (existingStart.Date != newStart.Date) return false;
+                                return (newStart < existingEnd) && (existingStart < newEnd);
+                            });
+
+                        if (patientConflict)
+                        {
+                            error = "This patient already has an overlapping appointment. Pick a different time.";
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                ErrorMessage = error;
                 IsErrorMessageVisible = true;
             }
             else
             {
-               ErrorMessage = string.Empty;
-               IsErrorMessageVisible = false;
-            }
-           
-            // If no other validation error, check physician double-booking 
-            {
-                try
-                {
-                    if (Model != null && Model.PhysicianId > 0 && (Model.StartDate.HasValue || true) && (Model.StartTime.HasValue || true) && (Model.EndTime.HasValue || true))
-                    {
-                        var newStart = StartDate.Date + StartTime;
-                        var newEnd = StartDate.Date + EndTime;
-
-                        if (newEnd > newStart)
-                        {
-                            var conflict = AppointmentServiceProxy
-                                .Current
-                                .Appointments
-                                .Where(a => a != null)
-                                .Where(a => (a?.PhysicianId ?? -1) == Model.PhysicianId)
-                                .Where(a => (a?.Id ?? 0) != (Model.Id)) // exclude self when editing
-                                .Where(a => a?.StartDate.HasValue == true && a?.StartTime.HasValue == true && a?.EndTime.HasValue == true)
-                                .Any(a =>
-                                {
-                                    var existingStart = a!.StartDate!.Value.Date + a.StartTime!.Value;
-                                    var existingEnd = a.StartDate!.Value.Date + a.EndTime!.Value;
-                                    if (existingStart.Date != newStart.Date) return false; // only same date
-                                    return (newStart < existingEnd) && (existingStart < newEnd);
-                                });
-
-                            if (conflict)
-                            {
-                                ErrorMessage = "This physician already has an overlapping appointment. Pick a different time.";
-                                IsErrorMessageVisible = true;
-                            }
-                        }
-                    }
-                }
-                catch
-                {}
+                ErrorMessage = string.Empty;
+                IsErrorMessageVisible = false;
             }
 
             NotifyPropertyChanged(nameof(CanSave));

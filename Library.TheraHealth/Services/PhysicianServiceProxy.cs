@@ -10,12 +10,16 @@ namespace Library.TheraHealth.Services;
 public class PhysicianServiceProxy
 {
     private List<PhysicianDTO?> physicians;
-    public event Action? PhysiciansChanged;
     private PhysicianServiceProxy()
     {
         physicians = new List<PhysicianDTO?>();
-        // Initial load
-        Refresh();
+        var physiciansResponse = new WebRequestHandler().Get("/Physician").Result;
+        if (physiciansResponse != null)
+        {
+            physicians = JsonConvert.DeserializeObject<List<PhysicianDTO?>>(physiciansResponse) ?? new List<PhysicianDTO?>();
+        }
+
+    
     }
     private static PhysicianServiceProxy? instance;
     private static object instanceLock = new object();
@@ -45,23 +49,21 @@ public class PhysicianServiceProxy
         var physicianPayload = await new WebRequestHandler().Post("/Physician", physician);
         var physicianFromServer = JsonConvert.DeserializeObject<PhysicianDTO?>(physicianPayload);
 
-        // Update local cache from server response
-        if (physicianFromServer != null)
+       if (physician.Id <= 0)
         {
-            var existing = physicians.FirstOrDefault(p => (p?.Id ?? 0) == (physicianFromServer?.Id ?? 0));
-            if (existing == null)
-            {
-                physicians.Add(physicianFromServer);
-            }
-            else
-            {
-                var index = physicians.IndexOf(existing);
-                physicians[index] = physicianFromServer;
-            }
-            PhysiciansChanged?.Invoke();
+            physicians.Add(physicianFromServer);
         }
-
-        return physicianFromServer;
+        else
+        {
+            var physicianToEdit = Physicians.FirstOrDefault(b => (b?.Id ?? 0) == physician.Id);
+            if (physicianToEdit != null)
+            {
+                var index = Physicians.IndexOf(physicianToEdit);
+                Physicians.RemoveAt(index);
+                physicians.Insert(index, physician);
+            }
+        }
+            return physician;
     }
 
     public PhysicianDTO? DeletePhysician(int id)
@@ -74,30 +76,7 @@ public class PhysicianServiceProxy
 
         physicians.Remove(physicianToDelete);
 
-        PhysiciansChanged?.Invoke();
-
         return physicianToDelete;
-    }
-
-    public void Refresh()
-    {
-        try
-        {
-            var physiciansResponse = new WebRequestHandler().Get("/Physician").Result;
-            if (physiciansResponse != null)
-            {
-                physicians = JsonConvert.DeserializeObject<List<PhysicianDTO?>>(physiciansResponse) ?? new List<PhysicianDTO?>();
-            }
-            else
-            {
-                physicians = new List<PhysicianDTO?>();
-            }
-            PhysiciansChanged?.Invoke();
-        }
-        catch
-        {
-            // ignore for now; keep existing list
-        }
     }
 
     public PhysicianDTO? GetPhysicianId(int id)

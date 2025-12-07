@@ -19,7 +19,6 @@ public class MainViewModel: INotifyPropertyChanged
 
 		public void Refresh()
 		{
-			
 			NotifyPropertyChanged(nameof(Patients));
 			NotifyPropertyChanged(nameof(Physicians));
 			NotifyPropertyChanged(nameof(Appointments));
@@ -107,3 +106,6 @@ public class MainViewModel: INotifyPropertyChanged
 	} 
 
 }
+
+
+

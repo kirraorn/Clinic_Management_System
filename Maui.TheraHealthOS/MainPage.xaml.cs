@@ -1,5 +1,4 @@
-﻿// BUGS:
-// 2: when editing appointments, the physician dropdown needs to be reclicked or else it will be deleted
+﻿
 
 using Maui.TheraHealthOS.ViewModels;
 
@@ -78,7 +77,7 @@ public partial class MainPage : ContentPage
 	private void InlineEditPatientClicked(object sender, EventArgs e)
 	{
 		(BindingContext as MainViewModel)?.Refresh();
-	}
+	} 
 
 	private void InlineEditPhysicianClicked(object sender, EventArgs e)
 	{

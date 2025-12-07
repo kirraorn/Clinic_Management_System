@@ -11,7 +11,6 @@ public partial class PhysicianView : ContentPage
     public PhysicianView()
     {
         InitializeComponent();
-        BindingContext = new Physician();
     }
 
     private void CancelPhysicianClicked(object sender, EventArgs e)

@@ -26,11 +26,11 @@ namespace Api.TheraHealth.Database
 
         private Filebase()
         {
-            // Use a folder in Documents to avoid permission issues on macOS
+            
             _root = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "ApiData");
             _physicianRoot = Path.Combine(_root, "Physicians");
 
-            // Ensure directories exist
+           
             Directory.CreateDirectory(_physicianRoot);
         }
 
@@ -48,7 +48,6 @@ namespace Api.TheraHealth.Database
 
         public Physician AddOrUpdate(Physician physician)
         {
-            // Assign new ID if not set
             if (physician.Id <= 0)
             {
                 physician.Id = LastBlogKey + 1;
@@ -56,7 +55,6 @@ namespace Api.TheraHealth.Database
 
             string path = Path.Combine(_physicianRoot, $"{physician.Id}.json");
 
-            // Overwrite existing file if it exists
             if (File.Exists(path))
             {
                 File.Delete(path);
