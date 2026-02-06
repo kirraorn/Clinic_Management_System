@@ -1,4 +1,4 @@
-# TheraHealthMacOS
+# Clinic Management System
 
 This repository contains the TheraHealth MAUI app (macOS / mobile) and supporting libraries.
 
