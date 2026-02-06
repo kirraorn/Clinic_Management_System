@@ -28,3 +28,15 @@ packages/
 
 ## MAUI / Xamarin
 **/Resources/**/AboutAssets.txt
+
+# Ignore Compiled Folders
+bin/
+obj/
+
+# Ignore Firebase Config
+google-services.json
+GoogleService-Info.plist
+
+# Ignore User-specific files
+.DS_Store
+*.user
